@@ -32,7 +32,17 @@
   const settings = {
     video : 'files/45312466_1165018633674519_4617306550069886976_n.mp4',
 
-    layers : 8,
+    layers : 9,
+
+    zIndex : {
+      min : 0,
+      max : 8,
+
+      delay : {
+        min : 100,
+        max : 200,
+      },
+    },
 
     blend : {
       modes : [
@@ -103,7 +113,7 @@
       },
 
       opacity : {
-        probability : 0.75,
+        probability : 1,
 
         min :   0,
         max : 100,
@@ -170,11 +180,17 @@
       layer.appendChild(source);
       source.src = settings.video;
 
-      layer.style[i % 2 == 0 ? 'right' : 'left'] = '50%';
+      layer.style.left = i % 3 / 3 * 100 + '%';
 
       layer.autoplay = true;
       layer.muted    = true;
       layer.loop     = true;
+
+      const zIndex = () => {
+        layer.style.zIndex = f.randomIntegerInclusive(settings.zIndex.min, settings.zIndex.max);
+        const delay = f.randomIntegerInclusive(settings.zIndex.delay.min, settings.zIndex.delay.max);
+        setTimeout(zIndex, delay);
+      }
 
       const blend = () => {
         layer.style.mixBlendMode = f.randomItem(settings.blend.modes);
@@ -205,6 +221,7 @@
         setTimeout(jitter, delay);
       }
 
+      zIndex();
       blend();
       filter();
       jitter();
