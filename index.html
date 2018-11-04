@@ -39,8 +39,8 @@
       max : 8,
 
       delay : {
-        min : 100,
-        max : 200,
+        min :  100,
+        max : 1600,
       },
     },
 
@@ -65,17 +65,17 @@
       ],
 
       delay : {
-        min :  500,
-        max : 2000,
+        min :  400,
+        max : 1600,
       },
     },
 
     filter : {
       blur : {
-        probability : 0.125,
+        probability : 1 / 8,
 
-        min : 1,
-        max : 4,
+        min : 0,
+        max : 8,
         def : 0,
 
         symbol : 'px',
@@ -83,7 +83,7 @@
       },
 
       brightness : {
-        probability : 0.25,
+        probability : 1 / 4,
 
         min :    0,
         max : 1000,
@@ -93,7 +93,7 @@
       },
 
       contrast : {
-        probability : 0.25,
+        probability : 1 / 4,
 
         min :    0,
         max : 1000,
@@ -103,7 +103,7 @@
       },
 
       'hue-rotate' : {
-        probability : 0.5,
+        probability : 1 / 2,
 
         min :   0,
         max : 360,
@@ -123,7 +123,7 @@
       },
 
       saturate : {
-        probability : 0.5,
+        probability : 1 / 2,
 
         min :    0,
         max : 1000,
@@ -133,8 +133,8 @@
       },
 
       delay : {
-        min : 100,
-        max : 200,
+        min :  100,
+        max : 1600,
       },
     },
 
@@ -143,8 +143,8 @@
       y : 4,
 
       delay : {
-        min : 100,
-        max : 200,
+        min :  100,
+        max : 1600,
       },
     },
   };
@@ -155,6 +155,8 @@
       max = Math.floor(max);
       return Math.floor(Math.random() * (max - min + 1)) + min;
     },
+
+    randomIntegerInRange : range => f.randomIntegerInclusive(range.min, range.max),
 
     randomItem : array => array[Math.floor(Math.random() * array.length)],
 
@@ -187,14 +189,14 @@
       layer.loop     = true;
 
       const zIndex = () => {
-        layer.style.zIndex = f.randomIntegerInclusive(settings.zIndex.min, settings.zIndex.max);
-        const delay = f.randomIntegerInclusive(settings.zIndex.delay.min, settings.zIndex.delay.max);
+        layer.style.zIndex = f.randomIntegerInRange(settings.zIndex);
+        const delay = f.randomIntegerInRange(settings.zIndex.delay);
         setTimeout(zIndex, delay);
       }
 
       const blend = () => {
         layer.style.mixBlendMode = f.randomItem(settings.blend.modes);
-        const delay = f.randomIntegerInclusive(settings.blend.delay.min, settings.blend.delay.max);
+        const delay = f.randomIntegerInRange(settings.blend.delay);
         setTimeout(blend, delay);
       }
 
@@ -210,14 +212,14 @@
         }
 
         layer.style.filter = f.shuffleArray(Object.values(newFilter)).join(' ');
-        const delay = f.randomIntegerInclusive(settings.filter.delay.min, settings.filter.delay.max);
+        const delay = f.randomIntegerInRange(settings.filter.delay);
         setTimeout(filter, delay);
       }
 
       const jitter = () => {
         const [x, y] = [settings.jitter.x, settings.jitter.y].map(n => f.randomIntegerInclusive(-n, n));
         layer.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-        const delay = f.randomIntegerInclusive(settings.jitter.delay.min, settings.jitter.delay.max);
+        const delay = f.randomIntegerInRange(settings.jitter.delay);
         setTimeout(jitter, delay);
       }
 
