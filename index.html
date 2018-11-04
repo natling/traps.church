@@ -2,12 +2,11 @@
 <html>
 
 <head>
-  <title>traps.church</title>
+  <title>　ｌｉｇｈｔ　</title>
   <meta charset="UTF-8">
   <link rel="shortcut icon" href="files/favicon.png"/>
-  <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
   <style>
-    body {
+  	body {
       margin: 0px;
       width: 100vw;
       height: 100vh;
@@ -15,36 +14,202 @@
       justify-content: center;
       align-items: center;
       background: black;
-    }
+      overflow: hidden;
+  	}
 
-    pre {
-      margin: 0px;
-      color: LightGray;
-      font-family: 'Lora', serif;
-      font-size: 16pt;
-      line-height: 1.7;
-      letter-spacing: 2px;
+    video {
+      position: absolute;
+      width: 101%;
+      height: 101%;
     }
   </style>
 </head>
 
 <body>
-  <pre>Иду в неведомый мне путь,
-Иду меж страха и надежды;
-Мой взор угас, остыла грудь,
-Не внемлет слух, сомкнуты вежды.
-Лежу безгласен, недвижим,
-Не слышу братского рыданья,
-И от кадила синий дым
-Не мне струит благоуханье.
-Но вечным сном пока я сплю,
-Моя любовь не умирает.
-И ею, братья, вас молю,
-Да каждый к Господу взывает:
-Господь! В тот день, когда труба
-Вострубит мира преставленье,
-Прими усопшего раба
-В Твои небесные селенья.</pre>
 </body>
+
+<script>
+  const settings = {
+    video : 'files/45312466_1165018633674519_4617306550069886976_n.mp4',
+
+    layers : 4,
+
+    blend : {
+      modes : [
+        'normal',
+        'multiply',
+        'screen',
+        'overlay',
+        'darken',
+        'lighten',
+        'color-dodge',
+        'color-burn',
+        'hard-light',
+        'soft-light',
+        'difference',
+        'exclusion',
+        'hue',
+        'saturation',
+        'color',
+        'luminosity',
+      ],
+
+      delay : {
+        min :  500,
+        max : 2000,
+      },
+    },
+
+    filter : {
+      blur : {
+        probability : 0.125,
+
+        min : 1,
+        max : 4,
+        def : 0,
+
+        symbol : 'px',
+
+      },
+
+      brightness : {
+        probability : 0.25,
+
+        min :    0,
+        max : 1000,
+        def :  100,
+
+        symbol : '%',
+      },
+
+      contrast : {
+        probability : 0.25,
+
+        min :    0,
+        max : 1000,
+        def :  100,
+
+        symbol : '%',
+      },
+
+      'hue-rotate' : {
+        probability : 0.5,
+
+        min :   0,
+        max : 360,
+        def :   0,
+
+        symbol : 'deg',
+      },
+
+      opacity : {
+        probability : 0.25,
+
+        min :   0,
+        max : 100,
+        def : 100,
+
+        symbol : '%',
+      },
+
+      saturate : {
+        probability : 0.5,
+
+        min :    0,
+        max : 1000,
+        def :  100,
+
+        symbol : '%',
+      },
+
+      delay : {
+        min : 100,
+        max : 200,
+      },
+    },
+
+    jitter : {
+      x : 8,
+      y : 4,
+
+      delay : {
+        min : 100,
+        max : 200,
+      },
+    },
+  };
+
+  const f = {
+    randomIntegerInclusive : (min, max) => {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+
+    randomItem : array => array[Math.floor(Math.random() * array.length)],
+
+    shuffleArray : array => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+      }
+
+      return array;
+    },
+
+    coin : p => Math.random() < p,
+  };
+
+  const createLayers = () => {
+    for (let i = 0; i < settings.layers; i++) {
+      const layer  = document.createElement('video');
+      const source = document.createElement('source');
+      document.body.appendChild(layer);
+      layer.appendChild(source);
+      source.src = settings.video;
+
+      layer.autoplay = true;
+      layer.muted    = true;
+      layer.loop     = true;
+
+      const blend = () => {
+        layer.style.mixBlendMode = f.randomItem(settings.blend.modes);
+        const delay = f.randomIntegerInclusive(settings.blend.delay.min, settings.blend.delay.max);
+        setTimeout(blend, delay);
+      }
+
+      const filter = () => {
+        const newFilter = {};
+
+        for (const property in settings.filter) {
+          if (property != 'delay') {
+            const {probability, min, max, def, symbol} = settings.filter[property];
+            newFilter[property] = f.coin(probability) ? f.randomIntegerInclusive(min, max) : def;
+            newFilter[property] = property + '(' + newFilter[property] + symbol + ')';
+          }
+        }
+
+        layer.style.filter = f.shuffleArray(Object.values(newFilter)).join(' ');
+        const delay = f.randomIntegerInclusive(settings.filter.delay.min, settings.filter.delay.max);
+        setTimeout(filter, delay);
+      }
+
+      const jitter = () => {
+        const [x, y] = [settings.jitter.x, settings.jitter.y].map(n => f.randomIntegerInclusive(-n, n));
+        layer.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+        const delay = f.randomIntegerInclusive(settings.jitter.delay.min, settings.jitter.delay.max);
+        setTimeout(jitter, delay);
+      }
+
+      blend();
+      filter();
+      jitter();
+    }
+  }
+
+  createLayers();
+</script>
 
 </html>
