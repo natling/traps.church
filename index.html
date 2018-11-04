@@ -19,8 +19,8 @@
 
     video {
       position: absolute;
-      width: 101%;
-      height: 101%;
+      max-width: 50%;
+      height: 100%;
     }
   </style>
 </head>
@@ -32,7 +32,7 @@
   const settings = {
     video : 'files/45312466_1165018633674519_4617306550069886976_n.mp4',
 
-    layers : 4,
+    layers : 8,
 
     blend : {
       modes : [
@@ -169,6 +169,8 @@
       document.body.appendChild(layer);
       layer.appendChild(source);
       source.src = settings.video;
+
+      layer.style[i % 2 == 0 ? 'right' : 'left'] = '50%';
 
       layer.autoplay = true;
       layer.muted    = true;
