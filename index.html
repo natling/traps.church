@@ -71,65 +71,67 @@
     },
 
     filter : {
-      blur : {
-        probability : 1 / 8,
+      properties : {
+        blur : {
+          probability : 1 / 8,
 
-        min : 0,
-        max : 8,
-        def : 0,
+          min : 0,
+          max : 8,
+          def : 0,
 
-        symbol : 'px',
+          symbol : 'px',
 
-      },
+        },
 
-      brightness : {
-        probability : 1 / 4,
+        brightness : {
+          probability : 1 / 4,
 
-        min :    0,
-        max : 1000,
-        def :  100,
+          min :    0,
+          max : 1000,
+          def :  100,
 
-        symbol : '%',
-      },
+          symbol : '%',
+        },
 
-      contrast : {
-        probability : 1 / 4,
+        contrast : {
+          probability : 1 / 4,
 
-        min :    0,
-        max : 1000,
-        def :  100,
+          min :    0,
+          max : 1000,
+          def :  100,
 
-        symbol : '%',
-      },
+          symbol : '%',
+        },
 
-      'hue-rotate' : {
-        probability : 1 / 2,
+        'hue-rotate' : {
+          probability : 1 / 2,
 
-        min :   0,
-        max : 360,
-        def :   0,
+          min :   0,
+          max : 360,
+          def :   0,
 
-        symbol : 'deg',
-      },
+          symbol : 'deg',
+        },
 
-      opacity : {
-        probability : 1,
+        opacity : {
+          probability : 1,
 
-        min :   0,
-        max : 100,
-        def :  50,
+          min :   0,
+          max : 100,
+          def :  50,
 
-        symbol : '%',
-      },
+          symbol : '%',
+        },
 
-      saturate : {
-        probability : 1 / 2,
+        saturate : {
+          probability : 1 / 2,
 
-        min :    0,
-        max : 1000,
-        def :  100,
+          min :    0,
+          max : 1000,
+          def :  100,
 
-        symbol : '%',
+          symbol : '%',
+        },
       },
 
       delay : {
@@ -179,7 +181,7 @@
       layer.appendChild(source);
       source.src = settings.video;
 
-      layer.style.left = i % 3 / 3 * 100 + '%';
+      layer.style.left = `${i % 3 / 3 * 100}%`;
 
       layer.autoplay = true;
       layer.muted    = true;
@@ -187,37 +189,29 @@
 
       const zIndex = () => {
         layer.style.zIndex = f.randomIntegerInRange(settings.zIndex);
-        const delay = f.randomIntegerInRange(settings.zIndex.delay);
-        setTimeout(zIndex, delay);
+        setTimeout(zIndex, f.randomIntegerInRange(settings.zIndex.delay));
       }
 
       const blend = () => {
         layer.style.mixBlendMode = f.randomItem(settings.blend.modes);
-        const delay = f.randomIntegerInRange(settings.blend.delay);
-        setTimeout(blend, delay);
+        setTimeout(blend, f.randomIntegerInRange(settings.blend.delay));
       }
 
       const filter = () => {
-        const newFilter = {};
+        layer.style.filter = f.shuffleArray(Object.entries(settings.filter.properties))
+        .map(([property, {probability, min, max, def, symbol}]) => {
+          const value = f.coin(probability) ? f.randomIntegerInclusive(min, max) : def;
+          return `${property}(${value}${symbol})`;
+        })
+        .join(' ');
 
-        for (const property in settings.filter) {
-          if (property != 'delay') {
-            const {probability, min, max, def, symbol} = settings.filter[property];
-            newFilter[property] = f.coin(probability) ? f.randomIntegerInclusive(min, max) : def;
-            newFilter[property] = property + '(' + newFilter[property] + symbol + ')';
-          }
-        }
-
-        layer.style.filter = f.shuffleArray(Object.values(newFilter)).join(' ');
-        const delay = f.randomIntegerInRange(settings.filter.delay);
-        setTimeout(filter, delay);
+        setTimeout(filter, f.randomIntegerInRange(settings.filter.delay));
       }
 
       const jitter = () => {
         const [x, y] = [settings.jitter.x, settings.jitter.y].map(n => f.randomIntegerInclusive(-n, n));
-        layer.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-        const delay = f.randomIntegerInRange(settings.jitter.delay);
-        setTimeout(jitter, delay);
+        layer.style.transform = `translate(${x}px, ${y}px)`;
+        setTimeout(jitter, f.randomIntegerInRange(settings.jitter.delay));
       }
 
       zIndex();
