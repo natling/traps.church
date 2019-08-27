@@ -158,7 +158,7 @@
       return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
-    randomIntegerInRange : range => f.randomIntegerInclusive(range.min, range.max),
+    randomIntegerInRange : ({min, max}) => f.randomIntegerInclusive(min, max),
 
     randomItem : array => array[Math.floor(Math.random() * array.length)],
 
